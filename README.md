@@ -22,3 +22,8 @@ TODO
 * Add some nice arguments
 * ???
 * Profit
+
+PyPi xmlrpc Doc
+---------------
+
+xmlrpc documentation can be found here: http://wiki.python.org/moin/PyPiXmlRpc
