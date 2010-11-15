@@ -6,9 +6,7 @@ Pip2Arch converts entries in the pypi database to Arch Linux PKGBUILDS, allowing
 Usage
 -----
 
-# pip2arch django-sentry
-
-will create a PKGBUILD in the pip2arch dir for the django-sentry python package.
+`pip2arch.py django-sentry` will create a PKGBUILD for the django-sentry python package. Run `pip2arch --help` for more information on the various arguments possible.
 
 Problems
 --------
