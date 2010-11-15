@@ -103,11 +103,16 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--version', dest='version', action='store',
                         help='The version of the speciied PyPi package to process')
     parser.add_argument('-o', '--output', dest='outfile', action='store', type=argparse.FileType('w'),
-                        default=sys.stdout,
+                        default=open('PKGBUILD', 'w'),
                         help='The file to output the generated PKGBUILD to')
     
     args = parser.parse_args()
     
     p = Package()
-    p.get_package(args.pkgname, args.version)
+    try:
+        p.get_package(args.pkgname, args.version)
+    except pip2archException as e:
+        sys.exit('ERROR: {0}'.format(e))
+    print "Got package information"
     args.outfile.write(p.render())
+    print "Written PKGBUILD"
