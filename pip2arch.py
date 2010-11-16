@@ -13,7 +13,7 @@ pkgver={pkg.version}
 pkgrel=1
 pkgdesc="{pkg.description}"
 url="{pkg.url}"
-depends=('{pkg.pyversion}')
+depends=('{pkg.pyversion}' {depends})
 license=('{pkg.license}')
 arch=('any')
 source=('{pkg.download_url}')
@@ -32,6 +32,7 @@ class LackOfInformation(pip2archException): pass
 class Package(object):
     logging.info('Creating Server Proxy object')
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    depends = []
     
     def get_package(self, package_name, version=None):
         if version is None:
@@ -89,9 +90,13 @@ class Package(object):
             print 'That was NOT one of the choices...'
             print 'Try again'
             self.choose_version(versions)
+            
+    def add_depends(self, depends):
+        self.depends += depends
     
     def render(self):
-        return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today())
+        depends = '\'' + '\' \''.join(d for d in self.depends) + '\''
+        return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends)
 
 
 if __name__ == '__main__':
@@ -105,6 +110,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', dest='outfile', action='store', type=argparse.FileType('w'),
                         default=open('PKGBUILD', 'w'),
                         help='The file to output the generated PKGBUILD to')
+    parser.add_argument('-d', '--dependencies', dest='depends', action='append')
     
     args = parser.parse_args()
     
@@ -113,6 +119,8 @@ if __name__ == '__main__':
         p.get_package(args.pkgname, args.version)
     except pip2archException as e:
         sys.exit('ERROR: {0}'.format(e))
+    if args.depends:
+        p.add_depends(args.depends)
     print "Got package information"
     args.outfile.write(p.render())
     print "Written PKGBUILD"
