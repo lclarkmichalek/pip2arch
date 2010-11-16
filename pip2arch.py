@@ -97,7 +97,7 @@ class Package(object):
         self.depends += depends
     
     def render(self):
-        depends = '\'' + '\' \''.join(d for d in self.depends) + '\''
+        depends = '\'' + '\' \''.join(d for d in self.depends) + '\'' if self.depends else ''
         return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends)
 
 
