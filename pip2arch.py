@@ -21,7 +21,7 @@ md5sums=('{pkg.md5}')
 
 build() {{
     cd $srcdir/{pkg.name}-{pkg.version}
-    python2 setup.py install --root="$pkgdir" || return 1
+    {pkg.pyversion} setup.py install --root="$pkgdir" || return 1
 }}
 """
 
