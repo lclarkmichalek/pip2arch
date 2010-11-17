@@ -126,7 +126,8 @@ if __name__ == '__main__':
                         help='The file to output the generated PKGBUILD to')
     parser.add_argument('-s', '--search', dest='search', action='store_true',
                         help="Search for given package name, instead of building PKGBUILD")
-    parser.add_argument('-d', '--dependencies', dest='depends', action='append')
+    parser.add_argument('-d', '--dependencies', dest='depends', action='append',
+                        help="The name of a package that should be added to the depends array")
     parser.add_argument('-n', '--output-package-name', dest='outname', action='store', default=None,
                         help='The name of the package that pip2arch will generate')
     
