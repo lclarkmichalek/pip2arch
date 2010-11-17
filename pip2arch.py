@@ -85,6 +85,14 @@ class Package(object):
         except KeyError:
             raise pip2archException('PiPy did not return needed information')
         logging.info('Parsed other data')
+        
+    def search(self, term):
+        results = self.client.search({'description': str(term[1:])})
+        for result in results:
+            print ' - '.join((result['name'], result['summary']))
+        #If no results
+        if not results:
+            print 'No results found'
     
     def choose_version(self, versions):
         print "Multiple versions found:"
@@ -116,6 +124,8 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', dest='outfile', action='store', type=argparse.FileType('w'),
                         default=open('PKGBUILD', 'w'),
                         help='The file to output the generated PKGBUILD to')
+    parser.add_argument('-s', '--search', dest='search', action='store_true',
+                        help="Search for given package name, instead of building PKGBUILD")
     parser.add_argument('-d', '--dependencies', dest='depends', action='append')
     parser.add_argument('-n', '--output-package-name', dest='outname', action='store', default=None,
                         help='The name of the package that pip2arch will generate')
@@ -123,6 +133,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     p = Package()
+    
+    if args.search:
+        p.search(args.pkgname)
+        sys.exit(0)
+    
     try:
         p.get_package(name=args.pkgname, version=args.version, outname=args.outname or args.pkgname)
     except pip2archException as e:
