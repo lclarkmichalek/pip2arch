@@ -14,6 +14,7 @@ pkgrel=1
 pkgdesc="{pkg.description}"
 url="{pkg.url}"
 depends=('{pkg.pyversion}' {depends})
+makedepends=({makedepends})
 license=('{pkg.license}')
 arch=('any')
 source=('{pkg.download_url}')
@@ -33,6 +34,7 @@ class Package(object):
     logging.info('Creating Server Proxy object')
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     depends = []
+    makedepends = []
     
     def get_package(self, name, outname, version=None):
         if version is None:
@@ -108,9 +110,13 @@ class Package(object):
     def add_depends(self, depends):
         self.depends += depends
     
+    def add_makedepends(self, makedepends):
+        self.makedepends += makedepends
+    
     def render(self):
         depends = '\'' + '\' \''.join(d for d in self.depends) + '\'' if self.depends else ''
-        return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends)
+        makedepends = '\'' + '\' \''.join(d for d in self.makedepends) + '\'' if self.makedepends else ''
+        return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends, makedepends=makedepends)
 
 
 if __name__ == '__main__':
@@ -128,6 +134,8 @@ if __name__ == '__main__':
                         help="Search for given package name, instead of building PKGBUILD")
     parser.add_argument('-d', '--dependencies', dest='depends', action='append',
                         help="The name of a package that should be added to the depends array")
+    parser.add_argument('-m', '--make-dependencies', dest='makedepends', action='append',
+                        help="The name of a package that should be added to the makedepends array")
     parser.add_argument('-n', '--output-package-name', dest='outname', action='store', default=None,
                         help='The name of the package that pip2arch will generate')
     
@@ -145,6 +153,8 @@ if __name__ == '__main__':
         sys.exit('ERROR: {0}'.format(e))
     if args.depends:
         p.add_depends(args.depends)
+    if args.makedepends:
+        p.add_makedepends(args.makedepends)
     print "Got package information"
     args.outfile.write(p.render())
     print "Written PKGBUILD"
