@@ -37,7 +37,11 @@ class Package(object):
     def get_package(self, name, outname, version=None):
         if version is None:
             versions = self.client.package_releases(name)
-            version = self.choose_version(versions)
+            if len(versions) > 1:
+                version = self.choose_version(versions)
+            else:
+                logging.info('Using version %s' % versions[0])
+                version = versions[0]
         self.version = version
         
         self.outname = outname
