@@ -53,7 +53,7 @@ class Package(object):
         raw_urls = self.client.release_urls(name, version)
         logging.info('Got release_urls from PiPy')
         if not len(raw_urls) and len(data):
-            raise LackOfInformation('PyPi did not return the neccisary information to create the PKGBUILD')
+            raise LackOfInformation('PyPi did not return the necissary information to create the PKGBUILD')
         elif len(data) and len(raw_urls):
             urls = {}
             for url in raw_urls:
