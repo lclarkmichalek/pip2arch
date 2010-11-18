@@ -161,6 +161,8 @@ def main():
                         help='The file to output the generated PKGBUILD to')
     parser.add_argument('-s', '--search', dest='search', action='store_true',
                         help="Search for given package name, instead of building PKGBUILD")
+    parser.add_argument('-i', '--interactive', dest='interactive', action='store_true',
+                        help="Makes all commands interactive, prompting user for input.")
     parser.add_argument('--search-build', dest='searchbuild', action='store_true',
                         help='Search for given package name, and build PKGBUILD for it')
     parser.add_argument('-d', '--dependencies', dest='depends', action='append',
@@ -175,10 +177,8 @@ def main():
     p = Package()
     
     if args.search:
-        p.search(args.pkgname, interactive=False)
-        return
-    elif args.searchbuild:
-        p.search(args.pkgname, interactive=True)
+        p.search(args.pkgname, interactive=args.interactive)
+        if not args.interactive: return
     else:
         p.get_package(name=args.pkgname, version=args.version, outname=args.outname or args.pkgname)
     
