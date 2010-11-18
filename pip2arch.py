@@ -167,8 +167,6 @@ def main():
                         help="Search for given package name, instead of building PKGBUILD")
     parser.add_argument('-i', '--interactive', dest='interactive', action='store_true',
                         help="Makes all commands interactive, prompting user for input.")
-    parser.add_argument('--search-build', dest='searchbuild', action='store_true',
-                        help='Search for given package name, and build PKGBUILD for it')
     parser.add_argument('-d', '--dependencies', dest='depends', action='append',
                         help="The name of a package that should be added to the depends array")
     parser.add_argument('-m', '--make-dependencies', dest='makedepends', action='append',
