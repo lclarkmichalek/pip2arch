@@ -1,4 +1,6 @@
 #!/usr/bin/python2
+from __future__ import unicode_literals
+
 import sys
 import xmlrpclib
 import datetime
@@ -88,13 +90,42 @@ class Package(object):
             raise pip2archException('PiPy did not return needed information')
         logging.info('Parsed other data')
         
-    def search(self, term):
-        results = self.client.search({'description': str(term[1:])})
-        for result in results:
-            print ' - '.join((result['name'], result['summary']))
+    def search(self, term, interactive=False):
+        results = self.client.search({'description': term[1:]})
+        logging.info('Got search results for term {term} from PiPy server'.format(term=term))
+
         #If no results
         if not results:
-            print 'No results found'
+            print 'No packages found'
+            return
+        
+        for i, result in enumerate(results):
+            i += 1
+            print '{index}. {name} - {summary}'.format(index=i, name=result['name'], summary=result['summary'])
+            
+        #If we don't want talking, exit here
+        if not interactive:
+            return
+        
+        selection = raw_input('Enter the number of the PiPy package you would like to process\n')
+        
+        try:
+            selection = int(selection.strip())
+            selection -= 1
+            chosen = results[selection]
+        except (TypeError, IndexError):
+            print 'Not a valid selection. Must be integer in range 1 - {length}'.format(length=len(results))
+            retry = raw_input('Retry? [Y/n]\n')
+            if retry.strip()[0] != 'n':
+                #offer recurse on failure, maybe user will be smarter this time -.-
+                return self.search(term)
+            else:
+                return
+        
+        name = chosen['name']
+        outname = chosen['name']
+        
+        return self.get_package(name, outname)
     
     def choose_version(self, versions):
         print "Multiple versions found:"
@@ -119,9 +150,7 @@ class Package(object):
         return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends, makedepends=makedepends)
 
 
-if __name__ == '__main__':
-    
-    
+def main():
     parser = argparse.ArgumentParser(description='Convert a PiPy package into an Arch Linux PKGBUILD.')
     parser.add_argument('pkgname', metavar='N', action='store',
                         help='Name of PyPi package for pip2arch to process')
@@ -132,6 +161,8 @@ if __name__ == '__main__':
                         help='The file to output the generated PKGBUILD to')
     parser.add_argument('-s', '--search', dest='search', action='store_true',
                         help="Search for given package name, instead of building PKGBUILD")
+    parser.add_argument('--search-build', dest='searchbuild', action='store_true',
+                        help='Search for given package name, and build PKGBUILD for it')
     parser.add_argument('-d', '--dependencies', dest='depends', action='append',
                         help="The name of a package that should be added to the depends array")
     parser.add_argument('-m', '--make-dependencies', dest='makedepends', action='append',
@@ -144,17 +175,27 @@ if __name__ == '__main__':
     p = Package()
     
     if args.search:
-        p.search(args.pkgname)
-        sys.exit(0)
-    
-    try:
+        p.search(args.pkgname, interactive=False)
+        return
+    elif args.searchbuild:
+        p.search(args.pkgname, interactive=True)
+    else:
         p.get_package(name=args.pkgname, version=args.version, outname=args.outname or args.pkgname)
-    except pip2archException as e:
-        sys.exit('ERROR: {0}'.format(e))
+    
     if args.depends:
         p.add_depends(args.depends)
     if args.makedepends:
         p.add_makedepends(args.makedepends)
     print "Got package information"
     args.outfile.write(p.render())
-    print "Written PKGBUILD"
+    print "PKGBUILD written"
+
+if __name__ == '__main__':
+    try:
+        main()
+    except pip2archException as e:
+        sys.exit('Pip2Arch error: {0}'.format(e))
+    except Exception as e:
+        sys.exit('Error: {0}'.format(e))
+    else:
+        sys.exit(0)
