@@ -1,5 +1,6 @@
 #!/usr/bin/python2
 from __future__ import unicode_literals
+from __future__ import with_statement
 
 import sys
 import xmlrpclib
@@ -37,6 +38,7 @@ class Package(object):
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     depends = []
     makedepends = []
+    data_received = False
     
     def get_package(self, name, outname, version=None):
         if version is None:
@@ -89,6 +91,7 @@ class Package(object):
         except KeyError:
             raise pip2archException('PiPy did not return needed information')
         logging.info('Parsed other data')
+        self.data_received = True
         
     def search(self, term, interactive=False):
         results = self.client.search({'description': term[1:]})
@@ -105,6 +108,7 @@ class Package(object):
             
         #If we don't want talking, exit here
         if not interactive:
+            #self.data_received = False
             return
         
         selection = raw_input('Enter the number of the PiPy package you would like to process\n')
@@ -156,8 +160,8 @@ def main():
                         help='Name of PyPi package for pip2arch to process')
     parser.add_argument('-v', '--version', dest='version', action='store',
                         help='The version of the speciied PyPi package to process')
-    parser.add_argument('-o', '--output', dest='outfile', action='store', type=argparse.FileType('w'),
-                        default=open('PKGBUILD', 'w'),
+    parser.add_argument('-o', '--output', dest='outfile', action='store',
+                        default='PKGBUILD',
                         help='The file to output the generated PKGBUILD to')
     parser.add_argument('-s', '--search', dest='search', action='store_true',
                         help="Search for given package name, instead of building PKGBUILD")
@@ -178,7 +182,6 @@ def main():
     
     if args.search:
         p.search(args.pkgname, interactive=args.interactive)
-        if not args.interactive: return
     else:
         p.get_package(name=args.pkgname, version=args.version, outname=args.outname or args.pkgname)
     
@@ -186,9 +189,11 @@ def main():
         p.add_depends(args.depends)
     if args.makedepends:
         p.add_makedepends(args.makedepends)
-    print "Got package information"
-    args.outfile.write(p.render())
-    print "PKGBUILD written"
+    if p.data_received:
+        print "Got package information"
+        with open(args.outfile, 'w') as f:
+            f.write(p.render())
+        print "PKGBUILD written"
 
 if __name__ == '__main__':
     try:
