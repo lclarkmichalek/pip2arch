@@ -103,7 +103,7 @@ class Package(object):
         else:
             print 'That was NOT one of the choices...'
             print 'Try again'
-            return self.choose_version(versions)
+            self.choose_version(versions)
 
     def add_depends(self, depends):
         self.depends += depends
