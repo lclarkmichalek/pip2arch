@@ -39,7 +39,7 @@ class Package(object):
     depends = []
     makedepends = []
     data_received = False
-    
+
     def get_package(self, name, outname, version=None):
         if version is None:
             versions = self.client.package_releases(name)
@@ -49,9 +49,9 @@ class Package(object):
                 logging.info('Using version %s' % versions[0])
                 version = versions[0]
         self.version = version
-        
+
         self.outname = outname
-        
+
         data = self.client.release_data(name, version)
         logging.info('Got release_data from PiPy')
         raw_urls = self.client.release_urls(name, version)
@@ -69,8 +69,8 @@ class Package(object):
         elif not len(data):
             raise VersionNotFound('PyPi did not return any information for version {0}'.format(self.version))
         logging.info('Parsed release_urls data')
-            
-        
+
+
         pyversion = urls.get('python_version', '')
         if pyversion in ('source', 'any'):
             self.pyversion = 'python2'
@@ -80,7 +80,7 @@ class Package(object):
             self.pyversion = 'python2'
             logging.info('Falling back to default python version')
         logging.info('Parsed python_version')
-        
+
         try:
             self.name = data['name']
             self.description = data['summary']
@@ -92,7 +92,7 @@ class Package(object):
             raise pip2archException('PiPy did not return needed information')
         logging.info('Parsed other data')
         self.data_received = True
-        
+
     def search(self, term, interactive=False):
         results = self.client.search({'description': term[1:]})
         logging.info('Got search results for term {term} from PiPy server'.format(term=term))
@@ -101,18 +101,18 @@ class Package(object):
         if not results:
             print 'No packages found'
             return
-        
+
         for i, result in enumerate(results):
             i += 1
             print '{index}. {name} - {summary}'.format(index=i, name=result['name'], summary=result['summary'])
-            
+
         #If we don't want talking, exit here
         if not interactive:
             #self.data_received = False
             return
-        
+
         selection = raw_input('Enter the number of the PiPy package you would like to process\n')
-        
+
         try:
             selection = int(selection.strip())
             selection -= 1
@@ -125,12 +125,12 @@ class Package(object):
                 return self.search(term)
             else:
                 return
-        
+
         name = chosen['name']
         outname = chosen['name']
-        
+
         return self.get_package(name, outname)
-    
+
     def choose_version(self, versions):
         print "Multiple versions found:"
         print ', '.join(versions)
@@ -141,13 +141,13 @@ class Package(object):
             print 'That was NOT one of the choices...'
             print 'Try again'
             self.choose_version(versions)
-            
+
     def add_depends(self, depends):
         self.depends += depends
-    
+
     def add_makedepends(self, makedepends):
         self.makedepends += makedepends
-    
+
     def render(self):
         depends = '\'' + '\' \''.join(d for d in self.depends) + '\'' if self.depends else ''
         makedepends = '\'' + '\' \''.join(d for d in self.makedepends) + '\'' if self.makedepends else ''
@@ -173,16 +173,16 @@ def main():
                         help="The name of a package that should be added to the makedepends array")
     parser.add_argument('-n', '--output-package-name', dest='outname', action='store', default=None,
                         help='The name of the package that pip2arch will generate')
-    
+
     args = parser.parse_args()
-    
+
     p = Package()
-    
+
     if args.search:
         p.search(args.pkgname, interactive=args.interactive)
     else:
         p.get_package(name=args.pkgname, version=args.version, outname=args.outname or args.pkgname)
-    
+
     if args.depends:
         p.add_depends(args.depends)
     if args.makedepends:
