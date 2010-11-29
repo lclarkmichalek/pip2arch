@@ -153,4 +153,4 @@ if __name__ == '__main__':
         p.add_makedepends(args.makedepends)
     print "Got package information"
     args.outfile.write(p.render())
-    print "Written PKGBUILD"
+    print "Wrote the PKGBUILD"
