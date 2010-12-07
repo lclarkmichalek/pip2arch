@@ -66,7 +66,7 @@ class Package(object):
                     raise LackOfInformation("Couln't find any tar.gz")
                 else:
                     urls = {'url': download_url}
-                    logging.info('Got download link but not md5, you may have to search it by youself or generated it')
+                    logging.warning('Got download link but not md5, you may have to search it by youself or generated it')
             else:
                 raise LackOfInformation('PyPi did not return the necissary information to create the PKGBUILD')
         else:
