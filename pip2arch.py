@@ -208,7 +208,5 @@ if __name__ == '__main__':
         main()
     except pip2archException as e:
         sys.exit('Pip2Arch error: {0}'.format(e))
-    except Exception as e:
-        sys.exit('Error: {0}'.format(e))
     else:
         sys.exit(0)
