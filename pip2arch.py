@@ -159,8 +159,8 @@ class Package(object):
         self.makedepends += makedepends
 
     def render(self):
-        depends = '\'' + '\' \''.join(d for d in self.depends) + '\'' if self.depends else ''
-        makedepends = '\'' + '\' \''.join(d for d in self.makedepends) + '\'' if self.makedepends else ''
+        depends = "'" + "' '".join(d for d in self.depends) + "'" if self.depends else ''
+        makedepends = "'" + "' '".join(d for d in self.makedepends) + "'" if self.makedepends else ''
         return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends, makedepends=makedepends)
 
 
