@@ -57,9 +57,19 @@ class Package(object):
         
         raw_urls = self.client.release_urls(name, version)
         logging.info('Got release_urls from PiPy')
-        if not len(raw_urls) and len(data):
-            raise LackOfInformation('PyPi did not return the necissary information to create the PKGBUILD')
-        elif len(data) and len(raw_urls):
+        if not len(data):
+            raise VersionNotFound('PyPi did not return any information for version {0}'.format(self.version))
+        elif not len(raw_urls):
+            if 'download_url' in data:
+                download_url = data['download_url']
+                if not 'tar.gz' in download_url:
+                    raise LackOfInformation("Couln't find any tar.gz")
+                else:
+                    urls = {'url': download_url}
+                    logging.info('Got download link but not md5, you may have to search it by youself or generated it')
+            else:
+                raise LackOfInformation('PyPi did not return the necissary information to create the PKGBUILD')
+        else:
             urls = {}
             for url in raw_urls:
                 #if probabaly posix compat
@@ -67,8 +77,6 @@ class Package(object):
                     urls = url
             if not urls:
                 raise pip2archException('Selected package version had no .tar.gz sources')
-        elif not len(data):
-            raise VersionNotFound('PyPi did not return any information for version {0}'.format(self.version))
         logging.info('Parsed release_urls data')
 
 
@@ -95,7 +103,7 @@ class Package(object):
             self.name = data['name']
             self.description = data['summary']
             self.download_url = urls.get('url', '')
-            self.md5 = urls['md5_digest']
+            self.md5 = urls.get('md5_digest', '')
             self.url = data.get('home_page', '')
             self.license = data['license']
         except KeyError:
