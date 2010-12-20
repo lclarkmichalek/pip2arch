@@ -139,7 +139,7 @@ class Package(object):
         except (TypeError, IndexError):
             print 'Not a valid selection. Must be integer in range 1 - {length}'.format(length=len(results))
             retry = raw_input('Retry? [Y/n]\n')
-            if retry.strip()[0] != 'n':
+            if retry.strip()[0].lower() != 'n':
                 #offer recurse on failure, maybe user will be smarter this time -.-
                 return self.search(term)
             else:
