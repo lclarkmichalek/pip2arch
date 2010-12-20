@@ -112,14 +112,15 @@ class Package(object):
         self.data_received = True
 
     def search(self, term, interactive=False):
-        results = self.client.search({'description': term[1:]})
+        results = self.client.search({'description': term[1:],
+                                      'name': term[1:]},
+                                      'or')
         logging.info('Got search results for term {term} from PiPy server'.format(term=term))
 
         #If no results
         if not results:
             print 'No packages found'
             return
-
         for i, result in enumerate(results):
             i += 1
             print '{index}. {name} - {summary}'.format(index=i, name=result['name'], summary=result['summary'])
