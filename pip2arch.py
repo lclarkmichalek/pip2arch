@@ -97,7 +97,7 @@ class Package(object):
             self.outname = '{pyversion}-{pkgname}'.format(pyversion=self.pyversion, pkgname=name).lower()
             logging.info('Automaticly added {0} to the front of the package'.format(self.pyversion))
         else:
-            self.outname = pkgname.lower()
+            self.outname = name.lower()
 
         try:
             self.name = data['name']
