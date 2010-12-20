@@ -54,7 +54,7 @@ class Package(object):
 
         data = self.client.release_data(name, version)
         logging.info('Got release_data from PiPy')
-        
+
         raw_urls = self.client.release_urls(name, version)
         logging.info('Got release_urls from PiPy')
         if not len(data):
@@ -89,7 +89,7 @@ class Package(object):
             self.pyversion = 'python2'
             logging.info('Falling back to default python version')
         logging.info('Parsed python_version')
-        
+
         if outname is not None:
             self.outname = outname.lower()
         elif any(re.search(r'Librar(ies|y)', item) for item in data['classifiers']):
