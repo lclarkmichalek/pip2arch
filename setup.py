@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from distutils.core import setup
 setup(  name="pip2arch",
-        version="x.x",
+        version="0.1",
         description="Convert pypi packages to Arch Linux PKGBUILDs",
         author="Laurie Clark-Michalek",
         author_email="BluePeppers@archlinux.us",
