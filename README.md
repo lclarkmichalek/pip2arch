@@ -16,12 +16,14 @@ A quick runthrough:
 * `-n` -- specify the name of the outputted package
 * `-v` -- the version of the PyPi package to use
 * `-s` -- search for package instead of building a PKGBUILD
+* `-i` -- make commands interactive
+* `-b` -- add custom arguments to the setup.py call in the PKGBUILD
+* `--logging-level` -- specify the logging level for pip2arch to run at {warning, info, debug} (default: warning)
 
 Problems
 --------
 
-Does not deal with dependencies, due to unreliable returns from the pypi xmlrpc api. If pypi were to fix this, which they can, then adding dependencies would not be at all hard. 
-
+Dependencies are only as good as PyPi's are, which is not very brilliant. Dependencies do not allways link in nicely with other PyPi generated packages (though that may be fixed in future versions).
 
 Get Involved
 ============
@@ -29,14 +31,6 @@ Get Involved
 Cheesy section, but still. I prefer patches via the github merge request system, and failing that, using `git-email` (which is a pain to setup, but an excelent tool).
 
 Fork the repo, pull the code, hack about, and send it too me.
-
-TODO
-----
-
-* Patch the pypi website to return dependencies?
-* Add some nice arguments
-* ???
-* Profit
 
 PyPi xmlrpc Doc
 ---------------
