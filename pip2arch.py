@@ -106,6 +106,7 @@ class Package(object):
             self.md5 = urls.get('md5_digest', '')
             self.url = data.get('home_page', '')
             self.license = data['license']
+            self.depends = data.get('requires', [])
         except KeyError:
             raise pip2archException('PiPy did not return needed information')
         logging.info('Parsed other data')
