@@ -26,7 +26,7 @@ md5sums=('{pkg.md5}')
 
 build() {{
     cd $srcdir/{pkg.name}-{pkg.version}
-    {pkg.pyversion} setup.py install --root="$pkgdir" --optimize=1
+    {pkg.pyversion} setup.py install --root="$pkgdir" --optimize=1 {pkg.setup_args}
 }}
 """
 
@@ -40,6 +40,7 @@ class Package(object):
     depends = []
     makedepends = []
     data_received = False
+    setup_args = ''
 
     def get_package(self, name, outname, version=None):
         if version is None:
@@ -198,6 +199,8 @@ def main():
                         help='The name of the package that pip2arch will generate')
     parser.add_argument('--logging-level', dest='logging_level', action='store', default='warning', choices=('warning', 'info', 'debug'),
                         help='The level of logging messages to show')
+    parser.add_argument('-b', '--build-args', dest='build_args', action='store',
+                        help='Custom arguments for the python install setup.py file')
 
     args = parser.parse_args()
     
@@ -214,6 +217,8 @@ def main():
         p.add_depends(args.depends)
     if args.makedepends:
         p.add_makedepends(args.makedepends)
+    if args.build_args:
+        p.setup_args = args.build_args
     if p.data_received:
         print "Got package information"
         with open(args.outfile, 'w') as f:
