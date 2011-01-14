@@ -173,6 +173,9 @@ class Package(object):
         makedepends = "'" + "' '".join(d for d in self.makedepends) + "'" if self.makedepends else ''
         return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends, makedepends=makedepends)
 
+def set_logging_level(level_str):
+    level = getattr(logging, level_str.upper())
+    logging.root.setLevel(level)
 
 def main():
     parser = argparse.ArgumentParser(description='Convert a PiPy package into an Arch Linux PKGBUILD.')
@@ -193,8 +196,12 @@ def main():
                         help="The name of a package that should be added to the makedepends array")
     parser.add_argument('-n', '--output-package-name', dest='outname', action='store', default=None,
                         help='The name of the package that pip2arch will generate')
+    parser.add_argument('--logging-level', dest='logging_level', action='store', default='warning', choices=('warning', 'info', 'debug'),
+                        help='The level of logging messages to show')
 
     args = parser.parse_args()
+    
+    set_logging_level(args.logging_level)
 
     p = Package()
 
