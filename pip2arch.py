@@ -53,10 +53,10 @@ class Package(object):
 
 
         data = self.client.release_data(name, version)
-        logging.info('Got release_data from PiPy')
+        logging.info('Got release_data from PyPi')
 
         raw_urls = self.client.release_urls(name, version)
-        logging.info('Got release_urls from PiPy')
+        logging.info('Got release_urls from PyPi')
         if not len(data):
             raise VersionNotFound('PyPi did not return any information for version {0}'.format(self.version))
         elif not len(raw_urls):
@@ -108,7 +108,7 @@ class Package(object):
             self.license = data['license']
             self.depends = data.get('requires', [])
         except KeyError:
-            raise pip2archException('PiPy did not return needed information')
+            raise pip2archException('PyPi did not return needed information')
         logging.info('Parsed other data')
         self.data_received = True
 
@@ -116,7 +116,7 @@ class Package(object):
         results = self.client.search({'description': term[1:],
                                       'name': term[1:]},
                                       'or')
-        logging.info('Got search results for term {term} from PiPy server'.format(term=term))
+        logging.info('Got search results for term {term} from PyPi server'.format(term=term))
 
         #If no results
         if not results:
@@ -131,7 +131,7 @@ class Package(object):
             #self.data_received = False
             return
 
-        selection = raw_input('Enter the number of the PiPy package you would like to process\n')
+        selection = raw_input('Enter the number of the PyPi package you would like to process\n')
 
         try:
             selection = int(selection.strip())
@@ -178,7 +178,7 @@ def set_logging_level(level_str):
     logging.root.setLevel(level)
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert a PiPy package into an Arch Linux PKGBUILD.')
+    parser = argparse.ArgumentParser(description='Convert a PyPi package into an Arch Linux PKGBUILD.')
     parser.add_argument('pkgname', metavar='N', action='store',
                         help='Name of PyPi package for pip2arch to process')
     parser.add_argument('-v', '--version', dest='version', action='store',

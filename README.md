@@ -14,7 +14,7 @@ A quick runthrough:
 * `-m` -- manually add a maketime dependency
 * `-o` -- specify the output file
 * `-n` -- specify the name of the outputted package
-* `-v` -- the version of the PiPy package to use
+* `-v` -- the version of the PyPi package to use
 * `-s` -- search for package instead of building a PKGBUILD
 
 Problems
