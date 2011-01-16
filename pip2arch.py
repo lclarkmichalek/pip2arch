@@ -103,13 +103,18 @@ class Package(object):
         else:
             self.outname = name.lower()
 
+        #check for licenes texts
+        if len(data.get('license', '')) > 10:
+            self.license = 'CUSTOM'
+        else:
+            self.license = data.get('license', 'UNKNOWN')
+
         try:
             self.name = data['name']
             self.description = data['summary']
             self.download_url = urls.get('url', '')
             self.md5 = urls.get('md5_digest', '')
             self.url = data.get('home_page', '')
-            self.license = data['license']
             self.depends = data.get('requires', [])
         except KeyError:
             raise pip2archException('PyPi did not return needed information')
