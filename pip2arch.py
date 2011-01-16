@@ -74,7 +74,10 @@ class Package(object):
             urls = {}
             for url in raw_urls:
                 #if probabaly posix compat
-                if url['filename'].endswith('.tar.gz'):
+                if re.search('.tar.(bz|gz|xz)$', url['filename']):
+                    urls = url
+                #otherwise, use zip
+                if not urls and url['filename'].endswith('.zip'):
                     urls = url
             if not urls:
                 raise pip2archException('Selected package version had no .tar.gz sources')
