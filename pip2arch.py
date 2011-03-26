@@ -18,13 +18,18 @@ pkgrel=1
 pkgdesc="{pkg.description}"
 url="{pkg.url}"
 depends=('{pkg.pyversion}' {depends})
-makedepends=('setuptools' {makedepends})
+makedepends=('{pkg.distributepackage}' {makedepends})
 license=('{pkg.license}')
 arch=('any')
 source=('{pkg.download_url}')
 md5sums=('{pkg.md5}')
 
 build() {{
+    cd $srcdir/{pkg.name}-{pkg.version}
+    {pkg.pyversion} setup.py build
+}}
+
+package() {{
     cd $srcdir/{pkg.name}-{pkg.version}
     {pkg.pyversion} setup.py install --root="$pkgdir" --optimize=1 {pkg.setup_args}
 }}
@@ -94,11 +99,16 @@ class Package(object):
             logging.info('Falling back to default python version')
         logging.info('Parsed python_version')
 
+        self.distributepackage = 'python2-distribute' if\
+            self.pyversion != 'python' else 'python3'
+        logging.info("Set distribute package as {0}".format(self.distributepackage))
+
         if outname is not None:
             self.outname = outname.lower()
         elif any(re.search(r'Librar(ies|y)', item) for item in data['classifiers']):
             #if this is a library
-            self.outname = '{pyversion}-{pkgname}'.format(pyversion=self.pyversion, pkgname=name).lower()
+            self.outname = '{pyversion}-{pkgname}'.format(
+                pyversion=self.pyversion, pkgname=name).lower()
             logging.info('Automaticly added {0} to the front of the package'.format(self.pyversion))
         else:
             self.outname = name.lower()
@@ -180,7 +190,10 @@ class Package(object):
     def render(self):
         depends = "'" + "' '".join(d for d in self.depends) + "'" if self.depends else ''
         makedepends = "'" + "' '".join(d for d in self.makedepends) + "'" if self.makedepends else ''
-        return BLANK_PKGBUILD.format(pkg=self, date=datetime.date.today(), depends=depends, makedepends=makedepends)
+        return BLANK_PKGBUILD.format(pkg=self,
+                                     date=datetime.date.today(),
+                                     depends=depends,
+                                     makedepends=makedepends)
 
 def set_logging_level(level_str):
     level = getattr(logging, level_str.upper())
