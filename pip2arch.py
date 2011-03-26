@@ -30,6 +30,8 @@ build() {{
 }}
 """
 
+SOURCEFILE_TYPE_RE = re.compile(".*\.(tar|zip|gz|z|bz2?|xz)", re.IGNORECASE)
+
 class pip2archException(Exception): pass
 class VersionNotFound(pip2archException): pass
 class LackOfInformation(pip2archException): pass
@@ -63,8 +65,8 @@ class Package(object):
         elif not len(raw_urls):
             if 'download_url' in data:
                 download_url = data['download_url']
-                if not 'tar.gz' in download_url:
-                    raise LackOfInformation("Couln't find any tar.gz")
+                if SOURCEFILE_TYPE_RE.match(data['download_url']) is None:
+                    raise LackOfInformation("Couldn't find any suitable source")
                 else:
                     urls = {'url': download_url}
                     logging.warning('Got download link but no md5, you may have to search it by youself or generate it')
@@ -74,10 +76,11 @@ class Package(object):
             urls = {}
             for url in raw_urls:
                 #if probabaly posix compat
-                if url['filename'].endswith('.tar.gz'):
+                if SOURCEFILE_TYPE_RE.match(url['filename']):
                     urls = url
             if not urls:
-                raise pip2archException('Selected package version had no .tar.gz sources')
+                raise pip2archException
+                ('Selected package version had no suitable sources')
         logging.info('Parsed release_urls data')
 
 
