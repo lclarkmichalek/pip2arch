@@ -35,7 +35,7 @@ package() {{
 }}
 """
 
-SOURCEFILE_TYPE_RE = re.compile(".*\.(tar|zip|gz|z|bz2?|xz)", re.IGNORECASE)
+SOURCEFILE_TYPE_RE = re.compile("\.(tar|zip|gz|z|bz2?|xz)$", re.IGNORECASE)
 
 class pip2archException(Exception): pass
 class VersionNotFound(pip2archException): pass
