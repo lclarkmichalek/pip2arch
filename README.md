@@ -15,6 +15,7 @@ A quick runthrough:
 * `-o` -- specify the output file
 * `-n` -- specify the name of the outputted package
 * `-v` -- the version of the PyPi package to use
+* `-p` -- the python version to build and install the package with {python,python2} (default: python)
 * `-s` -- search for package instead of building a PKGBUILD
 * `-i` -- make commands interactive
 * `-b` -- add custom arguments to the setup.py call in the PKGBUILD

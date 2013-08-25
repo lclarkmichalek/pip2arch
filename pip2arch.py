@@ -56,7 +56,7 @@ class Package(object):
     data_received = False
     setup_args = ''
 
-    def get_package(self, name, outname, version=None):
+    def get_package(self, name, outname, pyversion ,version=None):
         if version is None:
             versions = self.client.package_releases(name)
             if len(versions) > 1:
@@ -65,7 +65,7 @@ class Package(object):
                 logging.info('Using version %s' % versions[0])
                 version = versions[0]
         self.version = version
-
+        self.pyversion = pyversion
 
         data = self.client.release_data(name, version)
         logging.info('Got release_data from PyPi')
@@ -94,16 +94,6 @@ class Package(object):
                 ('Selected package version had no suitable sources')
         logging.info('Parsed release_urls data')
 
-
-        pyversion = urls.get('python_version', '')
-        if pyversion in ('source', 'any'):
-            self.pyversion = 'python2'
-        if pyversion.startswith('3'):
-            self.pyversion = 'python'
-        else:
-            self.pyversion = 'python2'
-            logging.info('Falling back to default python version')
-        logging.info('Parsed python_version')
 
         self.distributepackage = 'python2-distribute' if\
             self.pyversion != 'python' else 'python3'
@@ -211,6 +201,9 @@ def main():
                         help='Name of PyPi package for pip2arch to process')
     parser.add_argument('-v', '--version', dest='version', action='store',
                         help='The version of the speciied PyPi package to process')
+    parser.add_argument('-p', '--python-version', dest='pyversion', action='store',
+                        default='python', choices=('python','python2'),
+                        help='The python version to build and install the package with')
     parser.add_argument('-o', '--output', dest='outfile', action='store',
                         default='PKGBUILD',
                         help='The file to output the generated PKGBUILD to')
@@ -238,7 +231,8 @@ def main():
     if args.search:
         p.search(args.pkgname, interactive=args.interactive)
     else:
-        p.get_package(name=args.pkgname, version=args.version, outname=args.outname)
+        p.get_package(name=args.pkgname, pyversion= args.pyversion,
+                      version=args.version, outname=args.outname)
 
     if args.depends:
         p.add_depends(args.depends)
