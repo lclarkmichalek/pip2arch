@@ -50,7 +50,7 @@ class LackOfInformation(pip2archException): pass
 
 class Package(object):
     logging.info('Creating Server Proxy object')
-    client = ServerProxy('http://pypi.python.org/pypi')
+    client = ServerProxy('https://pypi.python.org/pypi')
     depends = []
     makedepends = []
     data_received = False
