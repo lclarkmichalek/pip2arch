@@ -59,6 +59,8 @@ class Package(object):
     def get_package(self, name, outname, pyversion ,version=None):
         if version is None:
             versions = self.client.package_releases(name)
+            if len(versions) < 1:
+                raise RuntimeError("unable to retrieve package '"+name+"'")
             if len(versions) > 1:
                 version = self.choose_version(versions)
             else:
@@ -110,11 +112,13 @@ class Package(object):
             self.outname = name.lower()
 
         #check for licenes texts
-        if len(data.get('license', '')) > 10:
+        if data.get('license',None) and len(data.get('license', '')) > 10:
             self.license = 'CUSTOM'
         else:
             self.license = data.get('license', 'UNKNOWN')
-
+        if not self.license:
+            self.license = "UNKNOWN"
+            
         try:
             self.name = data['name']
             self.description = data['summary']
