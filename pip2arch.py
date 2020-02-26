@@ -32,12 +32,12 @@ source=('{pkg.download_url}')
 md5sums=('{pkg.md5}')
 
 build() {{
-    cd $srcdir/{pkg.name}-{pkg.version}
+    cd $srcdir/${{pkgname}}-${{pkgver}}
     {pkg.pyversion} setup.py build
 }}
 
 package() {{
-    cd $srcdir/{pkg.name}-{pkg.version}
+    cd $srcdir/${{pkgname}}-${{pkgver}}
     {pkg.pyversion} setup.py install --root="$pkgdir" --optimize=1 {pkg.setup_args}
 }}
 """
