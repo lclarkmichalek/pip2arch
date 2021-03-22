@@ -6,6 +6,7 @@ import sys
 import datetime
 import logging
 import argparse
+import time
 import re
 
 # make this script work for python2 and python3
@@ -67,9 +68,11 @@ class Package(object):
         self.version = version
         self.pyversion = pyversion
 
+        time.sleep(1)
         data = self.client.release_data(name, version)
         logging.info('Got release_data from PyPi')
 
+        time.sleep(1)
         raw_urls = self.client.release_urls(name, version)
         logging.info('Got release_urls from PyPi')
         if not len(data):
