@@ -59,6 +59,8 @@ class Package(object):
     def get_package(self, name, outname, pyversion ,version=None):
         if version is None:
             versions = self.client.package_releases(name)
+            if len(versions) == 0:
+                raise ValueError(f"Could not find package `{name}`.")
             if len(versions) > 1:
                 version = self.choose_version(versions)
             else:
